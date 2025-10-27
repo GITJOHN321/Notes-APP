@@ -1,0 +1,18 @@
+# Archivos del sistema
+.DS_Store
+Thumbs.db
+
+# Dependencias
+node_modules/
+venv/
+
+# Configuración privada
+.env
+
+# Archivos de ejmplo
+example.py
+
+# Archivos de caché de Python
+__pycache__/
+*.py[cod]
+*.pyo
