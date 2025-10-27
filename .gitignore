@@ -16,3 +16,4 @@ example.py
 __pycache__/
 *.py[cod]
 *.pyo
+*.db

@@ -79,7 +79,7 @@ class NotesView(ctk.CTkFrame):
                 i.destroy()
                 self.items.remove(i)
             except Exception as e:
-                return print(f"❌ Error al eliminar la nota: {e}")
+                return print(f"❌ Error in delete note: {e}")
 
     def filter_notes(self, *args):
         query = self.search_var.get()
