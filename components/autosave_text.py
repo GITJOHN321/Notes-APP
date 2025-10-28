@@ -8,6 +8,8 @@ class AutoSaveText(ctk.CTkFrame):
 
         self.note_id = note_id
         self._contenido = body
+        self.bottom_border = ctk.CTkFrame(self, height=2, fg_color="royalblue", corner_radius=0)
+        self.bottom_border.pack(fill="x") # Make it fill the width
         self.textbox = AutoResizeTextbox(self)
         self.textbox.load_content(body)
         self.textbox.pack(fill="x", expand=True)

@@ -8,7 +8,9 @@ def button_note(container, text, command=None):
         command=command,
         fg_color="royalblue",
         text_color="white",
-        corner_radius=10,
+        border_width=0,
+        border_color="#00a2ff",
+        corner_radius=5,
         font=("Arial", 14, "bold"),
         border_spacing=1
     )
@@ -22,16 +24,30 @@ def button_control(container, text=None, command=None):
         fg_color="#525459",
         hover_color="#222325",
         text_color="white",
-        corner_radius=10,
+        corner_radius=5,
         font=("Arial", 14, "bold"),
         border_spacing=1
     )
     return button
 
+def button_clipboard(container, text=None, command=None):
+    button = ctk.CTkButton(
+            container,
+            text=text,
+            width=30,
+            command=command,
+            fg_color="#525459",
+            #hover_color="#222325",
+            text_color="white",
+            corner_radius=5,
+            font=("Arial", 14, "bold"),
+            border_spacing=1
+    )
+    return button
 
 def frame_note(container):
     frame = ctk.CTkFrame(container)
-    frame.pack(fill="x", pady=5)
+    frame.pack(fill="x", pady=5, fg_color="#00a2ff")
     return frame
 
 def textbox_note(container, body):

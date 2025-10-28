@@ -22,9 +22,7 @@ def init_view():
 
     # Aquí se renderiza la vista dentro del frame con scroll
     notes_view = NotesView(app, notes)
-    notes_view.pack(fill="both", expand=True)
-
-    
+    notes_view.pack(fill="both", expand=True)    
 
     app.mainloop()
     
