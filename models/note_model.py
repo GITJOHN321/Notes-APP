@@ -1,36 +1,9 @@
-import os
-from pathlib import Path
-from sqlcipher3 import dbapi2 as sqlite
+import sqlite3
 
-APP_DIR = Path.home() / ".local" / "share" / "miapp"
-DB_PATH = APP_DIR / "notas.db"
-KEY_PATH = APP_DIR / "key.bin"
-
-
-def ensure_secure_env():
-    APP_DIR.mkdir(parents=True, exist_ok=True)
-    os.chmod(APP_DIR, 0o700)
-
-    if not KEY_PATH.exists():
-        # 🔐 Generar clave aleatoria y guardarla con permisos 600
-        key = os.urandom(32).hex()
-        KEY_PATH.write_text(key)
-        os.chmod(KEY_PATH, 0o600)
-    else:
-        key = KEY_PATH.read_text().strip()
-
-    return key
-
+DB_NAME = "notas.db"
 
 def get_conn():
-    key = ensure_secure_env()
-    conn = sqlite.connect(str(DB_PATH))
-    conn.execute(f"PRAGMA key='{key}';")
-    conn.execute("PRAGMA cipher_memory_security = ON;")
-    return conn
-
-#def get_conn():
-    #return sqlite3.connect(DB_NAME)
+    return sqlite3.connect(DB_NAME)
 
 def create_table():
     with get_conn() as conn:
