@@ -1,9 +1,36 @@
-import sqlite3
+import os
+from pathlib import Path
+from sqlcipher3 import dbapi2 as sqlite
 
-DB_NAME = "notas.db"
+APP_DIR = Path.home() / ".local" / "share" / "miapp"
+DB_PATH = APP_DIR / "notas.db"
+KEY_PATH = APP_DIR / "key.bin"
+
+
+def ensure_secure_env():
+    APP_DIR.mkdir(parents=True, exist_ok=True)
+    os.chmod(APP_DIR, 0o700)
+
+    if not KEY_PATH.exists():
+        # 🔐 Generar clave aleatoria y guardarla con permisos 600
+        key = os.urandom(32).hex()
+        KEY_PATH.write_text(key)
+        os.chmod(KEY_PATH, 0o600)
+    else:
+        key = KEY_PATH.read_text().strip()
+
+    return key
+
 
 def get_conn():
-    return sqlite3.connect(DB_NAME)
+    key = ensure_secure_env()
+    conn = sqlite.connect(str(DB_PATH))
+    conn.execute(f"PRAGMA key='{key}';")
+    conn.execute("PRAGMA cipher_memory_security = ON;")
+    return conn
+
+#def get_conn():
+    #return sqlite3.connect(DB_NAME)
 
 def create_table():
     with get_conn() as conn:
@@ -65,3 +92,16 @@ def delete_note(id_note):
         cursor = conn.cursor()
         cursor.execute("DELETE FROM notes WHERE id_note = ?",(id_note,))
         conn.commit()
+
+def delete_notes_batch(ids):
+    """Elimina múltiples notas por lista de IDs."""
+    if not ids:
+        return
+
+    with get_conn() as conn:
+        cursor = conn.cursor()
+        placeholders = ','.join(['?'] * len(ids))
+        query = f"DELETE FROM notes WHERE id_note IN ({placeholders})"
+        cursor.execute(query, ids)
+        conn.commit()
+

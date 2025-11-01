@@ -7,14 +7,12 @@ node_modules/
 venv/
 build/
 dist/
-build_tools/
 
 # Configuración privada
 .env
 
 # Archivos de ejmplo
 example.py
-requirements.txt
 # Archivos de caché de Python
 __pycache__/
 *.py[cod]

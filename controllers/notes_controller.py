@@ -4,6 +4,13 @@ from entities.note import Note
 def get_list_notes():
     return [Note(*note_tuple) for note_tuple in model.get_all_notes()]
 
+def get_all_notes():
+    try:
+        notes = model.get_all_notes()
+        return notes
+    except Exception as e:
+        print(f"Error al traer notas: {e}")
+
 def add_note(title, body):
     if title and body:
         try:
@@ -32,5 +39,13 @@ def delete_note(id_note):
         try:
             model.delete_note(int(id_note))
             print("Nota eliminada correctamente")
+        except Exception as e:
+            print(f"Error al eliminar nota: {e}")
+
+def delete_list_note(ids):
+    if ids:
+        try:
+            model.delete_notes_batch(ids)
+            print("Notas eliminadas correctamente")
         except Exception as e:
             print(f"Error al eliminar nota: {e}")

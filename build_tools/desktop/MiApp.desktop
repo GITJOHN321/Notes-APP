@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=NotasPy
+Comment=Aplicación de notas hecha en CustomTkinter
+Exec=MiApp
+Icon=MiApp
+Terminal=false
+Categories=Utility;

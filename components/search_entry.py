@@ -3,51 +3,44 @@ import customtkinter as ctk
 class SearchVar(ctk.CTkFrame):
     def __init__(self, master, search=None):
         super().__init__(master)
+        self.search = search
+        self.search_delay = None
 
-        self.search=search
-
+        # Campo de búsqueda
         self.search_var = ctk.StringVar()
         self.search_entry = ctk.CTkEntry(self, textvariable=self.search_var)
-        self.search_entry.pack(side="left",fill="x", padx=(5,0), pady=5)
-        self.search_delay = None  # para almacenar el temporizador activo
-        self.search_var.trace("w", self.on_search_change)  # Detecta cambios en tiempo real   
+        self.search_entry.grid(row=0, column=0, sticky="ew", padx=(5, 0), pady=5)
 
-        # Botón Cerrar
-        self.close_button = ctk.CTkButton(self, text="✖", width=30, command= self.hide)
-        self.close_button.pack(side="left", padx=5, pady=5)
+        # Botón cerrar
+        self.close_button = ctk.CTkButton(self, text="✖", width=30, command=self.hide)
+        self.close_button.grid(row=0, column=1, padx=5, pady=5)
 
-        # Enfocar el campo
-        self.search_entry.focus()
+        self.grid_columnconfigure(0, weight=1)
 
-        #visible variable
-        self._visible = False
+        # Diferir focus y trace para acelerar render inicial
+        self.after(100, self.search_entry.focus_set)
+        self.after(150, lambda: self.search_var.trace("w", self.on_search_change))
 
     def on_search_change(self, *args):
-        # Si ya hay un temporizador corriendo, lo cancela
         if self.search_delay is not None:
             self.after_cancel(self.search_delay)
-
-        # Inicia un nuevo temporizador (1000 ms = 1 segundo)
         self.search_delay = self.after(300, self.search)
 
     def get(self):
-        print(self.search_var.get().lower().strip())
-        return self.search_var.get().lower().strip()   
+        return self.search_var.get().lower().strip()
 
     def show(self):
         self.pack(side="left", padx=2, expand=True)
-        self._visible = True
-        self.search_entry.focus()
+        self.after(100, self.search_entry.focus_set)
 
     def hide(self):
-        content = self.search_var.get().lower().strip()
-        if content:
+        if self.search_var.get():
             self.search_var.set("")
         self.pack_forget()
-        self._visible = False
 
     def visible(self):
-        return self._visible
+        return bool(self.winfo_ismapped())
+
         
     
     

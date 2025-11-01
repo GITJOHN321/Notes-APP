@@ -23,4 +23,3 @@ class ClipboardButton(ctk.CTkFrame):
         self.update()  # asegura que se actualice el portapapeles (importante en Linux)
 
  
-

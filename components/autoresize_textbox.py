@@ -1,7 +1,7 @@
 import customtkinter as ctk
 
 class AutoResizeTextbox(ctk.CTkTextbox):
-    def __init__(self, master=None, min_height=100, max_height=500, line_height=20, **kwargs):
+    def __init__(self, master=None, min_height=100, max_height=510, line_height=20, **kwargs):
         kwargs.setdefault("undo", True)
         kwargs.setdefault("autoseparators", True)
         kwargs.setdefault("maxundo", -1)
@@ -28,7 +28,7 @@ class AutoResizeTextbox(ctk.CTkTextbox):
         text = self.get("1.0", "end-1c")
 
         # Cuenta cuántas líneas hay
-        num_lines = text.count("\n") + 1
+        num_lines = text.count('\n') + 1
 
         # Calcula altura sugerida
         new_height = num_lines * self.line_height
@@ -37,7 +37,9 @@ class AutoResizeTextbox(ctk.CTkTextbox):
         final_height = max(self.min_height, min(new_height, self.max_height))
 
         # Configura el nuevo alto
-        self.configure(height=final_height)
+        if int(self.cget("height")) != final_height:
+            self.configure(height=final_height)
+            print("nueva línea")
 
         # Resetea el flag de modificación para que vuelva a detectar cambios
         self.edit_modified(False)
