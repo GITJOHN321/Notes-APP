@@ -1,5 +1,6 @@
 import customtkinter as ctk
 
+da_font= ("Font Awesome 5 Pro Solid", 14)
 
 def button_note(container, text, command=None):
     button = ctk.CTkButton(
@@ -25,7 +26,7 @@ def button_control(container, text=None, command=None):
         hover_color="#222325",
         text_color="white",
         corner_radius=5,
-        font=("Arial", 14, "bold"),
+        font= da_font,
         border_spacing=1
     )
     return button
@@ -40,7 +41,7 @@ def button_clipboard(container, text=None, command=None):
             #hover_color="#222325",
             text_color="white",
             corner_radius=5,
-            font=("Arial", 14, "bold"),
+            font= da_font,
             border_spacing=1
     )
     return button
@@ -58,3 +59,7 @@ def textbox_note(container, body):
     textbox.pack(fill="x", padx=0, pady=(5,0))
     textbox.insert("0.0", body)
     return textbox
+
+def font():
+    fa_font = ("Font Awesome 7 Free", 16)
+    return fa_font

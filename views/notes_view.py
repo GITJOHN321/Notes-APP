@@ -28,16 +28,16 @@ class NotesView(ctk.CTkFrame):
         self.control_frame.pack(pady=5)
 
         # Botones
-        self.sync_button = widget.button_control(self.control_frame, text="🗘 Sync")
+        self.sync_button = widget.button_control(self.control_frame, text="\uf2f1 Sync")
         self.sync_button.pack(side="left", padx=2)
 
-        self.add_button = widget.button_control(self.control_frame, text="✚ add", command=self.add_item)
+        self.add_button = widget.button_control(self.control_frame, text="\uf067 Add", command=self.add_item)
         self.add_button.pack(side="left", padx=2)
 
-        self.delete_button = widget.button_control(self.control_frame, text="🗑 del", command=self.delete_selected)
+        self.delete_button = widget.button_control(self.control_frame, text="\uf1f8 Del", command=self.delete_selected)
         self.delete_button.pack(side="left", padx=2)
 
-        self.search_button = widget.button_control(self.control_frame, text="🔍︎", command=self.show_search)
+        self.search_button = widget.button_control(self.control_frame, text="\uf002", command=self.show_search)
         self.search_button.pack(side="left", padx=2)
 
         # Frame contenedor de ítems

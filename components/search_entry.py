@@ -12,7 +12,7 @@ class SearchVar(ctk.CTkFrame):
         self.search_entry.grid(row=0, column=0, sticky="ew", padx=(5, 0), pady=5)
 
         # Botón cerrar
-        self.close_button = ctk.CTkButton(self, text="✖", width=30, command=self.hide)
+        self.close_button = ctk.CTkButton(self, text="\uf00d", font=("Font Awesome 5 Pro Solid", 14), width=30, command=self.hide)
         self.close_button.grid(row=0, column=1, padx=5, pady=5)
 
         self.grid_columnconfigure(0, weight=1)

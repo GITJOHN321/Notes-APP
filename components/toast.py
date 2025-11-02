@@ -12,7 +12,7 @@ class ToastMessage(ctk.CTkFrame):
             self,
             text=text,
             text_color="white",
-            font=("Arial", 12)
+            font=("Font Awesome 5 Pro Solid", 12)
         )
         self.label.pack(padx=15, pady=8)
 

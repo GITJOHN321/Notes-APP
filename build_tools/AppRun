@@ -1,4 +1,10 @@
 #!/bin/bash
 HERE="$(dirname "$(readlink -f "$0")")"
 export LD_LIBRARY_PATH="$HERE/usr/lib:$LD_LIBRARY_PATH"
+export FONTCONFIG_PATH="$HERE/usr/share/fonts"
+export XDG_DATA_DIRS="$HERE/usr/share:${XDG_DATA_DIRS}"
+
+# Refrescar caché por si no existe aún
+fc-cache -f -v "$HERE/usr/share/fonts" >/dev/null 2>&1
+
 exec "$HERE/usr/bin/MiApp" "$@"

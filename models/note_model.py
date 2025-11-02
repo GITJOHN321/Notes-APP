@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 from sqlcipher3 import dbapi2 as sqlite
 
-APP_DIR = Path.home() / ".local" / "share" / "miapp"
+APP_DIR = Path.home() / ".local" / "share" / "test"
 DB_PATH = APP_DIR / "notas.db"
 KEY_PATH = APP_DIR / "key.bin"
 

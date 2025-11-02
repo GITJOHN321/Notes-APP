@@ -3,7 +3,7 @@ from components.toast import ToastMessage
 import components.ctk_widgets as widget
 
 class ClipboardButton(ctk.CTkFrame):
-    def __init__(self,master, text=None, icon_on="!✔", icon_off="🗐", content=None):
+    def __init__(self,master, text=None, icon_on="!✔", icon_off="\uf0c5", content=None):
         super().__init__(master)
 
         self.text = text
@@ -19,7 +19,7 @@ class ClipboardButton(ctk.CTkFrame):
         copy = self.text()
         self.clipboard_clear()
         self.clipboard_append(copy)
-        ToastMessage(self.content, text="Copiado al portapapeles ✅")
+        ToastMessage(self.content, text="Copiado al portapapeles \uf058")
         self.update()  # asegura que se actualice el portapapeles (importante en Linux)
 
  
