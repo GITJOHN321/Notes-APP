@@ -1,16 +1,14 @@
 import customtkinter as ctk
 from components.autoresize_textbox import AutoResizeTextbox
-from repositories.note_repository import NoteRepository
 
 class AutoSaveText(ctk.CTkFrame):
-    def __init__(self, master, note_id=None, body="escribe un texto", reset_cache=None,repo=None,**kwargs):
+    def __init__(self, master, note=None,update=None,**kwargs):
         super().__init__(master, **kwargs)
 
-        self.note_id = note_id
-        self.repo = repo
+        self.note = note
+        self.update = update
         self._after_id = None
         self._last_saved = None
-        self.reset_cache = reset_cache
         # --- Línea inferior decorativa (opcional) ---
         self.bottom_border = ctk.CTkFrame(self, height=2, fg_color="royalblue", corner_radius=0)
         self.bottom_border.pack(fill="x")
@@ -18,7 +16,7 @@ class AutoSaveText(ctk.CTkFrame):
         # --- Textbox ---
         self.textbox = AutoResizeTextbox(self)
         self.textbox.pack(fill="x", expand=True, pady=(0, 2))
-        self.textbox.load_content(body)        
+        self.textbox.load_content(self.note.body)        
 
         # --- Eventos ---
         self.textbox.bind("<KeyRelease>", self.on_edit)
@@ -34,8 +32,8 @@ class AutoSaveText(ctk.CTkFrame):
         contenido = self.textbox.get("1.0", "end-1c").strip()
         if contenido == self._last_saved:
             return
-        self.repo.update(self.note_id, contenido)
-        self.reset_cache()
+        self.note.body=contenido
+        self.update(self.note)
         self._last_saved = contenido
         self._after_id = None
         print("Texto guardado automáticamente:\n", contenido)

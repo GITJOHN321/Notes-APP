@@ -5,9 +5,13 @@ FROM python:3.11.0-slim-bullseye
 # Evitar interacciones
 ENV DEBIAN_FRONTEND=noninteractive
 
+ENV LANG=C.UTF-8
+ENV LANGUAGE=C.UTF-8
+ENV LC_ALL=C.UTF-8
+
 # Instalar dependencias del sistema
 RUN apt update && apt install -y \
-    build-essential git wget curl \
+    build-essential git wget curl fontconfig\
     libsqlcipher-dev sqlcipher libfuse2 \
     xz-utils zip unzip \
     python3-tk file \

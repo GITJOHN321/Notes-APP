@@ -1,18 +1,21 @@
 import os
 from pathlib import Path
 from sqlcipher3 import dbapi2 as sqlite
+from entities.note import Note  # ← Importamos la entidad del dominio
 
+# 📁 Rutas seguras
 APP_DIR = Path.home() / ".local" / "share" / "test"
 DB_PATH = APP_DIR / "notas.db"
 KEY_PATH = APP_DIR / "key.bin"
 
-
+# ==========================================================
+# 🔐 Manejo seguro de entorno y clave
+# ==========================================================
 def ensure_secure_env():
     APP_DIR.mkdir(parents=True, exist_ok=True)
     os.chmod(APP_DIR, 0o700)
 
     if not KEY_PATH.exists():
-        # 🔐 Generar clave aleatoria y guardarla con permisos 600
         key = os.urandom(32).hex()
         KEY_PATH.write_text(key)
         os.chmod(KEY_PATH, 0o600)
@@ -29,9 +32,10 @@ def get_conn():
     conn.execute("PRAGMA cipher_memory_security = ON;")
     return conn
 
-#def get_conn():
-    #return sqlite3.connect(DB_NAME)
 
+# ==========================================================
+# 🧱 Inicialización de tabla
+# ==========================================================
 def create_table():
     with get_conn() as conn:
         cursor = conn.cursor()
@@ -42,66 +46,70 @@ def create_table():
                 body TEXT NOT NULL
             )
         """)
-        conn.commit() 
+        conn.commit()
 
+
+# ==========================================================
+# 📥 CRUD usando entidades Note
+# ==========================================================
 def get_all_notes():
     with get_conn() as conn:
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM notes")
         return cursor.fetchall()
 
-def get_note_by_id(id_note):
+def insert_note(note: Note):
+    """Inserta una nota en la BD y actualiza su ID."""
     with get_conn() as conn:
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM notes WHERE id_note = ?",(id_note))
-        return cursor.fetchone()
-
-def add_note(title, body):
-    with get_conn() as conn:
-        cursor = conn.cursor()
-        cursor.execute("INSERT INTO notes (title, body) VALUES (?,?)",(title, body))
+        cursor.execute(
+            "INSERT INTO notes (title, body) VALUES (?, ?)",
+            (note.title, note.body)
+        )
         conn.commit()
-        return cursor.lastrowid
-        
-def update_note(id_note, title=None, body=None):
-    campos=[]
-    valores=[]
+        note.id = cursor.lastrowid
+        return note.id
 
-    if title is not None:
-        campos.append("title = ?")
-        valores.append(title)
 
-    if body is not None:
-        campos.append("body = ?")
-        valores.append(body)
+def update_note(note: Note):
+    """
+    Actualiza una nota existente. 
+    Solo usa los valores del objeto Note.
+    """
+    if not note.id:
+        raise ValueError("La nota debe tener un ID para ser actualizada")
 
-    if not campos:
-        print("⚠️ No hay campos para actualizar.")
+    with get_conn() as conn:
+        cursor = conn.cursor()
+        cursor.execute(
+            "UPDATE notes SET title = ?, body = ? WHERE id_note = ?",
+            (note.title, note.body, note.id)
+        )
+        conn.commit()
+
+
+def delete_note(note: Note | int):
+    """Elimina una nota por objeto Note o por ID."""
+    note_id = note.id if isinstance(note, Note) else note
+    with get_conn() as conn:
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM notes WHERE id_note = ?", (note_id,))
+        conn.commit()
+
+
+def delete_notes_batch(notes: list[Note] | list[int]):
+    """Elimina múltiples notas (pueden ser objetos o IDs)."""
+    if not notes:
         return
 
-    sql = f"UPDATE notes SET {', '.join(campos)} WHERE id_note = ?"
-    valores.append(id_note)
+    # Convertimos a lista de IDs
+    ids = [n.id if isinstance(n, Note) else n for n in notes]
 
     with get_conn() as conn:
         cursor = conn.cursor()
-        cursor.execute(sql,valores)
-        conn.commit()
-
-def delete_note(id_note):
-    with get_conn() as conn:
-        cursor = conn.cursor()
-        cursor.execute("DELETE FROM notes WHERE id_note = ?",(id_note,))
-        conn.commit()
-
-def delete_notes_batch(ids):
-    """Elimina múltiples notas por lista de IDs."""
-    if not ids:
-        return
-
-    with get_conn() as conn:
-        cursor = conn.cursor()
-        placeholders = ','.join(['?'] * len(ids))
+        placeholders = ",".join(["?"] * len(ids))
         query = f"DELETE FROM notes WHERE id_note IN ({placeholders})"
         cursor.execute(query, ids)
         conn.commit()
+
 

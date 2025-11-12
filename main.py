@@ -1,4 +1,3 @@
-import controllers.notes_controller as controller
 from models.note_model import create_table
 from views.app_view import init_view
 

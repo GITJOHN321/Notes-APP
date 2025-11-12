@@ -5,14 +5,12 @@ from components.clipboard_button import ClipboardButton
 
 class SelectableButtonItem(ctk.CTkFrame):  
 
-    def __init__(self, master, note, title="Titulo", body="Escribir descripción", father=None, **kwargs):
+    def __init__(self, master, note, update=None, toast_father=None, **kwargs):
         super().__init__(master, **kwargs)
         self.note = note
-        #self.note_id = note_id
-        self.title = title
-        self.body = body 
         self.textbox = None
-        self.father= father
+        self.update = update
+        self.toast_father = toast_father
         # Subframe superior
         self.top_frame = ctk.CTkFrame(self, fg_color="transparent")
         self.top_frame.pack(fill="x", pady=0, ipady=0)
@@ -33,21 +31,19 @@ class SelectableButtonItem(ctk.CTkFrame):
         self.checkbox.grid(row=0, column=0, padx=1, pady=0, sticky="w")
 
         # Botón principal
-        self.button = EditableButton(self.top_frame, note_id=self.note.id, text=self.note.title, command=self.toggle_textbox,reset_cache=self.father.refresh_note_list, repo=self.father.repo)
+        self.button = EditableButton(self.top_frame, note=self.note, command=self.toggle_textbox, update=self.update)
         self.button.grid(row=0, column=1, padx=1, pady=0, sticky="ew")
 
-        self.clipboard = ClipboardButton(self.top_frame, text=lambda: self.textbox.get() if self.textbox else self.note.body, content=self.father)
+        self.clipboard = ClipboardButton(self.top_frame, text=lambda: self.textbox.get() if self.textbox else self.note.body, content=self.toast_father)
         self.clipboard.grid(row=0, column=2, padx=1, pady=0, sticky="e")
 
     def toggle_textbox(self,event=None):
         if not self.textbox:
             # 🔹 Crear solo al abrir
-            self.textbox = AutoSaveText(self, note_id=self.note.id, body=self.note.body, reset_cache=self.father.refresh_note_list,repo=self.father.repo)
+            self.textbox = AutoSaveText(self, note=self.note, update=self.update)
 
         if self.textbox.visible():
             self.textbox.hide()
         else:
             self.textbox.show()
             self.textbox.focus()
-
-

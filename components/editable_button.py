@@ -1,16 +1,14 @@
 import customtkinter as ctk
 import components.ctk_widgets as widget
-from repositories.note_repository import NoteRepository
 
 class EditableButton(ctk.CTkFrame):
-    def __init__(self, master, note_id=None, text="", command=None, reset_cache=None,repo=None,**kwargs):
+    def __init__(self, master, note=None, command=None,update=None,**kwargs):
         super().__init__(master, **kwargs)
-        self.repo = repo
-        self.text = text
-        self.note_id = note_id
+        self.update = update
+        self.text = note.title
+        self.note = note
         self._command = command
         self._cancelled = False
-        self.reset_cache = reset_cache
         self.button = widget.button_note(self, self.text, self.on_click)
         self.button.pack(fill="both", expand=True)
 
@@ -46,8 +44,8 @@ class EditableButton(ctk.CTkFrame):
         new_text = self.entry.get().strip()
         if new_text:
             #EDIT CONTROLLER
-            self.repo.update(self.note_id,new_title=new_text)
-            self.reset_cache()
+            self.note.title= new_text
+            self.update(self.note)
             self.text = new_text
             self.button.configure(text=self.text)
         self.return_to_button()

@@ -1,8 +1,5 @@
 import customtkinter as ctk
 from views.notes_view import NotesView
-from entities.note import Note
-
-import controllers.notes_controller as con
 
 
 # Configuración global   

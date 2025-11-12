@@ -1,44 +1,50 @@
 from entities.note import Note
-import controllers.notes_controller as con
-
+from entities.note_manager import NoteManager
+ 
 class NoteRepository:
-    def __init__(self):
-        self._notes_cache = []
+    def __init__(self, sql_model):
+        self.sql_model = sql_model
+        self.manager = NoteManager(self._load_from_db())
+        self._cache = self.manager.get_all()
 
-    def refresh(self):
-        data = con.get_all_notes()
-        self._notes_cache = [Note(*n) for n in data]
+    def _load_from_db(self):
+        """Carga notas desde la base de datos (modelo SQL)."""
+        return [Note(*note_tuple) for note_tuple in self.sql_model.get_all_notes()]
 
-    def get_all(self):
-        if not self._notes_cache:
-            self.refresh()
-        return self._notes_cache
-    
-    def add (self, title, body):
-        note_id= con.add_note(title, body)
-        new_note = Note(note_id, title, body)
-        self._notes_cache.append(new_note)
-        return new_note
+    def get_all_notes(self):
+        return self.manager.get_all()
 
-    def delete(self, note):
-        if note in self._notes_cache: 
-            con.delete_note(note.id)     # elimina de memoria
-            self._notes_cache.remove(note)
-        return True
+    def add_note(self, note):
+        try:
+            
+            note.id = self.sql_model.insert_note(note)
+            self.manager.add(note)
+            self._sync_cache()
+            print("✅ Nota agregada correctamente {note}")
+            return note
+        except Exception as e:
+            print(f"❌ Error al agregar la nota: {e}")
 
-    def update(self, note_id, new_body=None, new_title=None):
-        con.edit_note(note_id, body=new_body, title=new_title)
+    def edit_note(self, note):
+        if not note.id:
+            return print("❌ No se proporcionó un ID válido para la nota")
+        try:
+            self.sql_model.update_note(note)
+            self.manager.update(note)
+            self._sync_cache()
+            print("✅ Nota actualizada correctamente")
+        except Exception as e:
+            print(f"Error al actualizar nota: {e}")
 
-        for note in self._notes_cache:
-            if note.id == note_id:
-                if new_body is not None:
-                    note.body = new_body
-                if new_title is not None:
-                    note.title = new_title
-                break
-
-    def delete_many_notes(self, note_ids):
-        if not note_ids:
+    def delete_many_notes(self, notes_id):
+        if not notes_id:
             return
-        con.delete_list_note(note_ids)
-        self._notes_cache = [n for n in self._notes_cache if n.id not in note_ids]
+        try:
+            self.sql_model.delete_notes_batch(notes_id)
+            self.manager.remove(notes_id)
+            self._sync_cache()
+        except Exception as e:
+            print(f"Error al eliminar notas: {e}")
+    
+    def _sync_cache(self):
+        self._cache = self.manager.get_all()
